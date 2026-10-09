@@ -186,39 +186,51 @@
         <p>Memórias Matemáticas © 2026 - Licenciatura em Matemática (UFPR)</p>
     </footer>
 <!-- SCRIPT PARA PUXAR VÍDEOS AUTOMATICAMENTE -->
+<!-- SCRIPT PARA PUXAR VÍDEOS AUTOMATICAMENTE (VERSÃO CORRIGIDA E SEGURA) -->
     <script>
-        // 1. Coloque o ID do seu canal dentro das aspas (começa com UC)
+        // 1. O ID do seu canal 
         const channelId = 'UC7ltXJOjWjBcajjulwC0HUQ'; 
         
-        // 2. Serviço gratuito que converte o feed do YouTube para um formato legível
+        // 2. Monta os links
         const rssUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
         const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
 
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
-                // Define quantos vídeos você quer mostrar (neste caso, 3)
-                const videos = data.items.slice(0, 3); 
                 const galeria = document.getElementById('videos-automaticos');
-                galeria.innerHTML = ''; // Limpa o texto "Carregando..."
+                galeria.innerHTML = ''; // Limpa a mensagem "Carregando..."
 
-                videos.forEach(video => {
-                    // Pega o link do vídeo e transforma para o formato "embed" que funciona no site
-                    const videoId = video.link.split('v=')[1];
-                    const embedLink = `https://www.youtube.com/embed/${videoId}`;
+                // Verifica se a API retornou sucesso
+                if (data.status === 'ok') {
+                    // Pega até 3 vídeos
+                    const videos = data.items.slice(0, 3); 
 
-                    // Monta o visual de cada vídeo com o título oficial puxado do YouTube
-                    const html = `
-                        <div class="episodio">
-                            <iframe src="${embedLink}" allowfullscreen></iframe>
-                            <h3>${video.title}</h3>
-                        </div>
-                    `;
-                    galeria.innerHTML += html; // Insere o vídeo pronto na página
-                });
+                    videos.forEach(video => {
+                        // Método mais seguro para pegar o ID do vídeo (evita bugs caso o link venha diferente)
+                        const urlObj = new URL(video.link);
+                        const videoId = urlObj.searchParams.get('v') || video.link.split('/').pop();
+                        
+                        const embedLink = `https://www.youtube.com/embed/${videoId}`;
+
+                        const html = `
+                            <div class="episodio">
+                                <iframe src="${embedLink}" allowfullscreen></iframe>
+                                <h3>${video.title}</h3>
+                            </div>
+                        `;
+                        galeria.innerHTML += html;
+                    });
+                } else {
+                    // Se der erro de ID ou limite da API, mostra o motivo na tela!
+                    console.error("Erro reportado pela API:", data.message);
+                    galeria.innerHTML = `<p style="color: red;">Erro na API: ${data.message}</p>`;
+                }
             })
             .catch(error => {
-                document.getElementById('videos-automaticos').innerHTML = '<p>Erro ao carregar os episódios.</p>';
+                // Se der erro de internet ou bloqueador de anúncios
+                console.error("Erro no carregamento:", error);
+                document.getElementById('videos-automaticos').innerHTML = '<p style="color: red;">Ocorreu um erro de conexão. Verifique seu AdBlock ou Console do Navegador.</p>';
             });
     </script>
 </body>
