@@ -177,83 +177,59 @@
         <p>Memórias Matemáticas © 2026 - Licenciatura em Matemática (UFPR)</p>
     </footer>
 
-    <!-- SCRIPT: PUXA OS 3 VÍDEOS MAIS RECENTES DO CANAL -->
+    <!-- SCRIPT: PUXA OS 3 VÍDEOS MAIS RECENTES (API OFICIAL DO YOUTUBE) -->
     <script>
-        const CHANNEL_ID = 'UC7ltXJOjWjBcajjulwC0HUQ'; // ID do canal (começa com UC)
+        const API_KEY = 'COLE_SUA_CHAVE_AQUI';          // chave da YouTube Data API v3
+        const CHANNEL_ID = 'UC7ltXJOjWjBcajjulwC0HUQ';  // ID do canal (começa com UC)
         const QUANTIDADE = 3;
 
-        const RSS = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+        const PLAYLIST_UPLOADS = 'UU' + CHANNEL_ID.slice(2); // playlist de uploads do canal
         const galeria = document.getElementById('videos-automaticos');
-
-        // Opção 1: rss2json
-        async function buscarViaRss2json() {
-            const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS));
-            const d = await r.json();
-            if (d.status !== 'ok') throw new Error('rss2json falhou');
-            return d.items.map(item => ({
-                titulo: item.title,
-                id: new URL(item.link).searchParams.get('v')
-            }));
-        }
-
-        // Opções de reserva: outras pontes que leem o feed direto do YouTube
-        const PONTES = [
-            'https://corsproxy.io/?url=',
-            'https://api.codetabs.com/v1/proxy?quest=',
-            'https://api.allorigins.win/raw?url='
-        ];
-
-        function criarBuscaViaPonte(ponte) {
-            return async function () {
-                const r = await fetch(ponte + encodeURIComponent(RSS));
-                if (!r.ok) throw new Error('Ponte falhou: ' + ponte);
-                const xml = new DOMParser().parseFromString(await r.text(), 'application/xml');
-                return Array.from(xml.getElementsByTagName('entry')).map(e => ({
-                    titulo: e.getElementsByTagName('title')[0].textContent,
-                    id: e.getElementsByTagName('yt:videoId')[0].textContent
-                }));
-            };
-        }
 
         function mostrarVideos(videos) {
             galeria.innerHTML = '';
-            videos.slice(0, QUANTIDADE).forEach(v => {
+            videos.forEach(v => {
                 const div = document.createElement('div');
                 div.className = 'episodio';
                 div.innerHTML = `
                     <iframe src="https://www.youtube.com/embed/${v.id}" loading="lazy"
-                        title="${v.titulo.replace(/"/g, '&quot;')}"
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen></iframe>
                     <h3></h3>`;
+                div.querySelector('iframe').title = v.titulo;
                 div.querySelector('h3').textContent = v.titulo;
                 galeria.appendChild(div);
             });
         }
 
-        // Se tudo falhar: mostra a playlist de uploads do canal (UC -> UU)
         function mostrarPlaylistReserva() {
-            const playlist = 'UU' + CHANNEL_ID.slice(2);
             galeria.innerHTML = `
                 <div class="episodio" style="grid-column: 1 / -1; width: 100%; max-width: 480px; margin: 0 auto;">
-                    <iframe src="https://www.youtube.com/embed/videoseries?list=${playlist}"
+                    <iframe src="https://www.youtube.com/embed/videoseries?list=${PLAYLIST_UPLOADS}"
                         title="Episódios Memórias Matemáticas" allowfullscreen></iframe>
                 </div>`;
         }
 
-        (async () => {
-            const tentativas = [buscarViaRss2json, ...PONTES.map(criarBuscaViaPonte)];
-            for (const buscar of tentativas) {
-                try {
-                    const videos = await buscar();
-                    if (videos.length) { mostrarVideos(videos); return; }
-                } catch (e) {
-                    console.warn(e.message);
-                }
-            }
-            console.warn('Nenhuma ponte funcionou. Mostrando playlist de reserva.');
-            mostrarPlaylistReserva();
-        })();
+        const url = 'https://www.googleapis.com/youtube/v3/playlistItems'
+            + '?part=snippet&maxResults=10'
+            + '&playlistId=' + PLAYLIST_UPLOADS
+            + '&key=' + API_KEY;
+
+        fetch(url)
+            .then(r => r.json())
+            .then(dados => {
+                if (dados.error) throw new Error(dados.error.message);
+                const videos = dados.items
+                    .filter(i => i.snippet.title !== 'Private video' && i.snippet.title !== 'Deleted video')
+                    .map(i => ({ titulo: i.snippet.title, id: i.snippet.resourceId.videoId }))
+                    .slice(0, QUANTIDADE);
+                if (!videos.length) throw new Error('Nenhum vídeo encontrado');
+                mostrarVideos(videos);
+            })
+            .catch(erro => {
+                console.warn('Erro ao buscar vídeos:', erro.message);
+                mostrarPlaylistReserva();
+            });
     </script>
 </body>
 </html>
