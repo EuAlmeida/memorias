@@ -187,50 +187,56 @@
     </footer>
 <!-- SCRIPT PARA PUXAR VÍDEOS AUTOMATICAMENTE -->
 <!-- SCRIPT PARA PUXAR VÍDEOS AUTOMATICAMENTE (VERSÃO CORRIGIDA E SEGURA) -->
+   <!-- SCRIPT PARA PUXAR VÍDEOS (VERSÃO DIRETA E SEM RSS2JSON) -->
     <script>
-        // 1. O ID do seu canal 
         const channelId = 'UC7ltXJOjWjBcajjulwC0HUQ'; 
         
-        // 2. Monta os links
-        const rssUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
-        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
+        // Usamos o AllOrigins apenas como ponte para evitar bloqueios de segurança do navegador
+        const feedUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
+        const apiUrl = `https://api.allorigins.win/get?url=${feedUrl}`;
 
         fetch(apiUrl)
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Erro na ponte de conexão.');
+            })
             .then(data => {
+                // O YouTube devolve um arquivo XML, então nós mesmos o "traduzimos" aqui
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(data.contents, "application/xml");
+                
+                // Pega todos os vídeos (entries) e corta para mostrar apenas os 3 primeiros
+                const entries = Array.from(xml.querySelectorAll("entry")).slice(0, 3);
+                
                 const galeria = document.getElementById('videos-automaticos');
-                galeria.innerHTML = ''; // Limpa a mensagem "Carregando..."
+                galeria.innerHTML = ''; // Limpa o "Carregando..."
 
-                // Verifica se a API retornou sucesso
-                if (data.status === 'ok') {
-                    // Pega até 3 vídeos
-                    const videos = data.items.slice(0, 3); 
-
-                    videos.forEach(video => {
-                        // Método mais seguro para pegar o ID do vídeo (evita bugs caso o link venha diferente)
-                        const urlObj = new URL(video.link);
-                        const videoId = urlObj.searchParams.get('v') || video.link.split('/').pop();
-                        
-                        const embedLink = `https://www.youtube.com/embed/${videoId}`;
-
-                        const html = `
-                            <div class="episodio">
-                                <iframe src="${embedLink}" allowfullscreen></iframe>
-                                <h3>${video.title}</h3>
-                            </div>
-                        `;
-                        galeria.innerHTML += html;
-                    });
-                } else {
-                    // Se der erro de ID ou limite da API, mostra o motivo na tela!
-                    console.error("Erro reportado pela API:", data.message);
-                    galeria.innerHTML = `<p style="color: red;">Erro na API: ${data.message}</p>`;
+                if (entries.length === 0) {
+                    galeria.innerHTML = '<p>Nenhum vídeo encontrado.</p>';
+                    return;
                 }
+
+                entries.forEach(entry => {
+                    const title = entry.querySelector("title").textContent;
+                    const link = entry.querySelector("link").getAttribute("href");
+                    
+                    // Extrai o ID do vídeo para montar o player
+                    const urlObj = new URL(link);
+                    const videoId = urlObj.searchParams.get('v');
+                    const embedLink = `https://www.youtube.com/embed/${videoId}`;
+
+                    const html = `
+                        <div class="episodio">
+                            <iframe src="${embedLink}" allowfullscreen></iframe>
+                            <h3>${title}</h3>
+                        </div>
+                    `;
+                    galeria.innerHTML += html;
+                });
             })
             .catch(error => {
-                // Se der erro de internet ou bloqueador de anúncios
-                console.error("Erro no carregamento:", error);
-                document.getElementById('videos-automaticos').innerHTML = '<p style="color: red;">Ocorreu um erro de conexão. Verifique seu AdBlock ou Console do Navegador.</p>';
+                console.error("Erro ao carregar:", error);
+                document.getElementById('videos-automaticos').innerHTML = '<p style="color: red;">Erro ao carregar vídeos direto do YouTube.</p>';
             });
     </script>
 </body>
