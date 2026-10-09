@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memórias Matemáticas - Podcast UFPR</title>
-    
+
     <style>
         /* --- CONFIGURAÇÃO DE CORES --- */
-        /* Para mudar a cor principal do site, basta alterar o código da cor aqui embaixo */
         :root {
-            --cor-principal: #003c71; /* Azul escuro institucional */
-            --cor-secundaria: #13294b; 
+            --cor-principal: #003c71;
+            --cor-secundaria: #13294b;
             --cor-fundo: #f8f9fa;
             --cor-texto: #333333;
         }
@@ -24,25 +23,15 @@
             line-height: 1.6;
         }
 
-        /* Cabeçalho / Banner Principal */
         header {
             background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
             color: white;
             text-align: center;
             padding: 4rem 1rem;
         }
-        header h1 {
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-        }
-        header p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto 20px auto;
-            opacity: 0.9;
-        }
+        header h1 { font-size: 2.5rem; margin: 0 0 10px 0; }
+        header p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 20px auto; opacity: 0.9; }
 
-        /* Botões das Redes Sociais */
         .botoes-redes a {
             display: inline-block;
             background-color: white;
@@ -54,19 +43,10 @@
             font-weight: bold;
             transition: all 0.3s;
         }
-        .botoes-redes a:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
+        .botoes-redes a:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
-        /* Container que centraliza o conteúdo */
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
 
-        /* Caixas de cada seção */
         section {
             background-color: white;
             padding: 2rem;
@@ -84,20 +64,33 @@
         /* Grade de Episódios */
         .grade-episodios {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
         .episodio iframe {
             width: 100%;
-            height: 200px;
+            aspect-ratio: 16 / 9;
+            height: auto;
             border-radius: 8px;
             border: none;
+            display: block;
         }
-        .episodio h3 {
-            font-size: 1.1rem;
-            margin: 10px 0 5px 0;
+        .episodio h3 { font-size: 1rem; margin: 10px 0 5px 0; }
+
+        /* Botão "Quero ver mais episódios" */
+        .area-botao { text-align: center; margin-top: 30px; }
+        .btn-mais {
+            display: inline-block;
+            background-color: var(--cor-principal);
+            color: white;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
+        .btn-mais:hover, .btn-mais:focus { background-color: var(--cor-secundaria); }
 
         /* Grade de Participantes */
         .grade-equipe {
@@ -113,16 +106,9 @@
             object-fit: cover;
             border: 3px solid var(--cor-principal);
         }
-        .membro h4 {
-            margin: 10px 0 5px 0;
-        }
-        .membro p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: #666;
-        }
+        .membro h4 { margin: 10px 0 5px 0; }
+        .membro p { margin: 0; font-size: 0.9rem; color: #666; }
 
-        /* Rodapé */
         footer {
             text-align: center;
             padding: 1.5rem;
@@ -138,26 +124,25 @@
     <header>
         <h1>Memórias Matemáticas</h1>
         <p>Um projeto de extensão da Universidade Federal do Paraná. Conheça as histórias e as trajetórias dos professores de Matemática.</p>
-        
+
         <div class="botoes-redes">
-            <a href="https://www.youtube.com/@MemóriasMatemáticas" target="_blank">▶ Inscreva-se no YouTube</a>
+            <a href="https://www.youtube.com/@Mem%C3%B3riasMatem%C3%A1ticas" target="_blank">▶ Inscreva-se no YouTube</a>
             <a href="https://www.instagram.com/memoriasmatematicas/" target="_blank">📷 Siga no Instagram</a>
         </div>
     </header>
 
     <div class="container">
-    
-       <!-- SEÇÃO DE EPISÓDIOS -->
-       <!-- SEÇÃO DE EPISÓDIOS (VIA PLAYLIST DO CANAL) -->
+
+        <!-- SEÇÃO DE EPISÓDIOS (ATUALIZA SOZINHA) -->
         <section>
             <h2>Últimos Episódios</h2>
-            <div style="display: flex; justify-content: center; margin-top: 20px;">
-                <!-- O truque aqui é trocar o 'UC' do ID do canal por 'UU' para carregar a playlist de "Uploads" -->
-                <iframe width="100%" height="450" src="https://www.youtube.com/embed/videoseries?list=UU7ltXJOjWjBcajjulwC0HUQ" title="Memórias Matemáticas Episódios" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 10px; max-width: 800px;"></iframe>
+
+            <div id="videos-automaticos" class="grade-episodios">
+                <p>Carregando episódios...</p>
             </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="https://www.youtube.com/@MemóriasMatemáticas" target="_blank" class="btn-estiloso" style="display: inline-block; text-decoration: none;">Ver todos no YouTube</a>
+
+            <div class="area-botao">
+                <a href="https://www.youtube.com/@Mem%C3%B3riasMatem%C3%A1ticas/videos" target="_blank" class="btn-mais">Quero ver mais episódios</a>
             </div>
         </section>
 
@@ -165,8 +150,7 @@
         <section>
             <h2>Nossa Equipe</h2>
             <div class="grade-equipe">
-                
-                <!-- Você -->
+
                 <div class="membro">
                     <img src="LINK_DA_SUA_FOTO_AQUI.jpg" alt="João Vitor">
                     <h4>João Vitor</h4>
@@ -185,63 +169,77 @@
 
     </div>
 
-    <!-- RODAPÉ -->
     <footer>
         <p>Memórias Matemáticas © 2026 - Licenciatura em Matemática (UFPR)</p>
     </footer>
-<!-- SCRIPT PARA PUXAR VÍDEOS AUTOMATICAMENTE -->
-<!-- SCRIPT PARA PUXAR VÍDEOS AUTOMATICAMENTE (VERSÃO CORRIGIDA E SEGURA) -->
-   <!-- SCRIPT PARA PUXAR VÍDEOS (VERSÃO DIRETA E SEM RSS2JSON) -->
+
+    <!-- SCRIPT: PUXA OS 3 VÍDEOS MAIS RECENTES DO CANAL -->
     <script>
-        const channelId = 'UC7ltXJOjWjBcajjulwC0HUQ'; 
-        
-        // Usamos o AllOrigins apenas como ponte para evitar bloqueios de segurança do navegador
-        const feedUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
-        const apiUrl = `https://api.allorigins.win/get?url=${feedUrl}`;
+        const CHANNEL_ID = 'UC7ltXJOjWjBcajjulwC0HUQ'; // ID do canal (começa com UC)
+        const QUANTIDADE = 3;
 
-        fetch(apiUrl)
-            .then(response => {
-                if (response.ok) return response.json();
-                throw new Error('Erro na ponte de conexão.');
-            })
-            .then(data => {
-                // O YouTube devolve um arquivo XML, então nós mesmos o "traduzimos" aqui
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(data.contents, "application/xml");
-                
-                // Pega todos os vídeos (entries) e corta para mostrar apenas os 3 primeiros
-                const entries = Array.from(xml.querySelectorAll("entry")).slice(0, 3);
-                
-                const galeria = document.getElementById('videos-automaticos');
-                galeria.innerHTML = ''; // Limpa o "Carregando..."
+        const RSS = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+        const galeria = document.getElementById('videos-automaticos');
 
-                if (entries.length === 0) {
-                    galeria.innerHTML = '<p>Nenhum vídeo encontrado.</p>';
-                    return;
-                }
+        // Opção 1: rss2json
+        async function buscarViaRss2json() {
+            const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS));
+            const d = await r.json();
+            if (d.status !== 'ok') throw new Error('rss2json falhou');
+            return d.items.map(item => ({
+                titulo: item.title,
+                id: new URL(item.link).searchParams.get('v')
+            }));
+        }
 
-                entries.forEach(entry => {
-                    const title = entry.querySelector("title").textContent;
-                    const link = entry.querySelector("link").getAttribute("href");
-                    
-                    // Extrai o ID do vídeo para montar o player
-                    const urlObj = new URL(link);
-                    const videoId = urlObj.searchParams.get('v');
-                    const embedLink = `https://www.youtube.com/embed/${videoId}`;
+        // Opção 2 (reserva): AllOrigins
+        async function buscarViaAllOrigins() {
+            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS));
+            if (!r.ok) throw new Error('AllOrigins falhou');
+            const xml = new DOMParser().parseFromString(await r.text(), 'application/xml');
+            return Array.from(xml.getElementsByTagName('entry')).map(e => ({
+                titulo: e.getElementsByTagName('title')[0].textContent,
+                id: e.getElementsByTagName('yt:videoId')[0].textContent
+            }));
+        }
 
-                    const html = `
-                        <div class="episodio">
-                            <iframe src="${embedLink}" allowfullscreen></iframe>
-                            <h3>${title}</h3>
-                        </div>
-                    `;
-                    galeria.innerHTML += html;
-                });
-            })
-            .catch(error => {
-                console.error("Erro ao carregar:", error);
-                document.getElementById('videos-automaticos').innerHTML = '<p style="color: red;">Erro ao carregar vídeos direto do YouTube.</p>';
+        function mostrarVideos(videos) {
+            galeria.innerHTML = '';
+            videos.slice(0, QUANTIDADE).forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'episodio';
+                div.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/${v.id}" loading="lazy"
+                        title="${v.titulo.replace(/"/g, '&quot;')}"
+                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                    <h3></h3>`;
+                div.querySelector('h3').textContent = v.titulo;
+                galeria.appendChild(div);
             });
+        }
+
+        // Se tudo falhar: mostra a playlist de uploads do canal (UC -> UU)
+        function mostrarPlaylistReserva() {
+            const playlist = 'UU' + CHANNEL_ID.slice(2);
+            galeria.innerHTML = `
+                <div class="episodio" style="grid-column: 1 / -1;">
+                    <iframe src="https://www.youtube.com/embed/videoseries?list=${playlist}"
+                        title="Episódios Memórias Matemáticas" allowfullscreen></iframe>
+                </div>`;
+        }
+
+        (async () => {
+            for (const buscar of [buscarViaRss2json, buscarViaAllOrigins]) {
+                try {
+                    const videos = await buscar();
+                    if (videos.length) { mostrarVideos(videos); return; }
+                } catch (e) {
+                    console.warn(e.message);
+                }
+            }
+            mostrarPlaylistReserva();
+        })();
     </script>
 </body>
 </html>
