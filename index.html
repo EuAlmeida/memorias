@@ -279,8 +279,11 @@
 
         function atualizarCabecalho() {
             const progresso = Math.min(window.scrollY / (cabecalho.offsetHeight * VELOCIDADE), 1);
-            conteudo.style.opacity = 1 - progresso;
-            conteudo.style.transform = `translateY(${-progresso * 60}px) scale(${1 - progresso * 0.15})`;
+            // Fundo azul: sobe mais rápido que a página e vai sumindo
+            cabecalho.style.opacity = 1 - progresso;
+            cabecalho.style.transform = `translateY(${-progresso * cabecalho.offsetHeight * 0.4}px)`;
+            // Textos e logo: diminuem um pouco
+            conteudo.style.transform = `scale(${1 - progresso * 0.15})`;
             agendado = false;
         }
 
