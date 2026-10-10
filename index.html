@@ -144,6 +144,10 @@
             transition: background-color 0.3s;
         }
         .btn-mais:hover, .btn-mais:focus { background-color: var(--cor-secundaria); }
+        button.btn-mais { border: none; font: inherit; font-weight: bold; cursor: pointer; }
+        button.btn-mais:disabled { opacity: 0.6; cursor: wait; }
+        .link-canal { margin: 12px 0 0 0; font-size: 0.9rem; }
+        .link-canal a { color: var(--cor-principal); }
 
         /* Seção do Spotify */
         .secao-spotify {
@@ -223,7 +227,8 @@
             </div>
 
             <div class="area-botao">
-                <a href="https://www.youtube.com/@Mem%C3%B3riasMatem%C3%A1ticas/videos" target="_blank" class="btn-mais">Quero ver mais episódios</a>
+                <button id="btn-carregar" class="btn-mais" type="button" hidden>Carregar mais episódios</button>
+                <p class="link-canal"><a href="https://www.youtube.com/@Mem%C3%B3riasMatem%C3%A1ticas/videos" target="_blank">ou veja todos no canal do YouTube</a></p>
             </div>
         </section>
 
@@ -344,18 +349,49 @@
         }
     </script>
 
-    <!-- SCRIPT: PUXA OS 3 VÍDEOS MAIS RECENTES (API OFICIAL DO YOUTUBE) -->
+    <!-- SCRIPT: VÍDEOS DO CANAL (3 EM 3, PLAYER SÓ CARREGA APÓS O CLIQUE) -->
     <script>
         const API_KEY = 'AIzaSyAo1DA3wUFhgoIgC0huUmZn8KhdEIo2qUI';          // chave da YouTube Data API v3
         const CHANNEL_ID = 'UC7ltXJOjWjBcajjulwC0HUQ';  // ID do canal (começa com UC)
-        const QUANTIDADE = 3;
+        const POR_VEZ = 3;                               // quantos vídeos aparecem por clique
 
         const PLAYLIST_UPLOADS = 'UU' + CHANNEL_ID.slice(2); // playlist de uploads do canal
         const galeria = document.getElementById('videos-automaticos');
+        const botaoMais = document.getElementById('btn-carregar');
+
+        let fila = [];              // vídeos já buscados, esperando para aparecer
+        let proximaPagina = null;   // marcador da próxima página da API
+        let fimDaLista = false;     // true quando não há mais vídeos no canal
+        let primeiraVez = true;
+
+        // Busca uma página de vídeos na API e coloca na fila
+        async function buscarPagina() {
+            let url = 'https://www.googleapis.com/youtube/v3/playlistItems'
+                + '?part=snippet&maxResults=12'
+                + '&playlistId=' + PLAYLIST_UPLOADS
+                + '&key=' + API_KEY;
+            if (proximaPagina) url += '&pageToken=' + proximaPagina;
+
+            const dados = await (await fetch(url)).json();
+            if (dados.error) throw new Error(dados.error.message);
+
+            const videos = (dados.items || [])
+                .filter(i => i.snippet.title !== 'Private video' && i.snippet.title !== 'Deleted video')
+                .map(i => {
+                    const id = i.snippet.resourceId.videoId;
+                    const t = i.snippet.thumbnails || {};
+                    const thumb = (t.high || t.medium || {}).url || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+                    return { titulo: i.snippet.title, id: id, thumb: thumb };
+                });
+
+            fila.push(...videos);
+            proximaPagina = dados.nextPageToken || null;
+            if (!proximaPagina) fimDaLista = true;
+        }
 
         // Mostra só a imagem (thumb). O player do YouTube só carrega depois do clique/toque.
-        function mostrarVideos(videos) {
-            galeria.innerHTML = '';
+        function adicionarVideos(videos) {
+            if (primeiraVez) { galeria.innerHTML = ''; primeiraVez = false; }
             videos.forEach(v => {
                 const div = document.createElement('div');
                 div.className = 'episodio';
@@ -383,6 +419,24 @@
             });
         }
 
+        // Mostra os próximos 3 vídeos
+        async function carregarMais() {
+            botaoMais.disabled = true;
+            botaoMais.textContent = 'Carregando...';
+
+            while (fila.length < POR_VEZ && !fimDaLista) {
+                await buscarPagina();
+            }
+            const lote = fila.splice(0, POR_VEZ);
+            if (!lote.length && primeiraVez) throw new Error('Nenhum vídeo encontrado');
+            adicionarVideos(lote);
+
+            botaoMais.disabled = false;
+            botaoMais.textContent = 'Carregar mais episódios';
+            botaoMais.hidden = (fila.length === 0 && fimDaLista); // some quando acabar
+        }
+
+        // Se a API falhar: mostra a playlist do canal
         function mostrarPlaylistReserva() {
             galeria.innerHTML = `
                 <div class="episodio" style="grid-column: 1 / -1; width: 100%; max-width: 480px; margin: 0 auto;">
@@ -391,31 +445,19 @@
                 </div>`;
         }
 
-        const url = 'https://www.googleapis.com/youtube/v3/playlistItems'
-            + '?part=snippet&maxResults=10'
-            + '&playlistId=' + PLAYLIST_UPLOADS
-            + '&key=' + API_KEY;
-
-        fetch(url)
-            .then(r => r.json())
-            .then(dados => {
-                if (dados.error) throw new Error(dados.error.message);
-                const videos = dados.items
-                    .filter(i => i.snippet.title !== 'Private video' && i.snippet.title !== 'Deleted video')
-                    .map(i => {
-                        const id = i.snippet.resourceId.videoId;
-                        const t = i.snippet.thumbnails || {};
-                        const thumb = (t.high || t.medium || {}).url || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-                        return { titulo: i.snippet.title, id: id, thumb: thumb };
-                    })
-                    .slice(0, QUANTIDADE);
-                if (!videos.length) throw new Error('Nenhum vídeo encontrado');
-                mostrarVideos(videos);
-            })
-            .catch(erro => {
-                console.warn('Erro ao buscar vídeos:', erro.message);
-                mostrarPlaylistReserva();
+        botaoMais.addEventListener('click', () => {
+            carregarMais().catch(erro => {
+                console.warn('Erro ao buscar mais vídeos:', erro.message);
+                botaoMais.hidden = true;
             });
+        });
+
+        // Primeira carga
+        carregarMais().catch(erro => {
+            console.warn('Erro ao buscar vídeos:', erro.message);
+            botaoMais.hidden = true;
+            mostrarPlaylistReserva();
+        });
     </script>
 </body>
 </html>
