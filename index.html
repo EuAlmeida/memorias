@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>Memórias Matemáticas - Podcast UFPR</title>
 
     <style>
@@ -12,6 +13,27 @@
             --cor-secundaria: #13294b;
             --cor-fundo: #f8f9fa;
             --cor-texto: #333333;
+            --cor-cartao: #ffffff;     /* fundo das seções */
+            --cor-borda: #eeeeee;      /* linha embaixo dos títulos */
+            --cor-titulo: #003c71;     /* títulos e links */
+            --cor-suave: #666666;      /* textos secundários */
+            --cor-slide: #fafafa;      /* fundo dos posts carregando */
+            --cor-rodape: #222222;
+            color-scheme: light dark;
+        }
+
+        /* --- TEMA ESCURO (automático, segue o navegador/sistema) --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --cor-fundo: #0f1720;
+                --cor-texto: #e4e8ee;
+                --cor-cartao: #1a2330;
+                --cor-borda: #2a3646;
+                --cor-titulo: #8cbcf0;
+                --cor-suave: #a3adba;
+                --cor-slide: #222d3b;
+                --cor-rodape: #0a0f15;
+            }
         }
 
         body {
@@ -114,15 +136,15 @@
         .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
 
         section {
-            background-color: white;
+            background-color: var(--cor-cartao);
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 2rem;
         }
         h2 {
-            color: var(--cor-principal);
-            border-bottom: 2px solid #eee;
+            color: var(--cor-titulo);
+            border-bottom: 2px solid var(--cor-borda);
             padding-bottom: 10px;
             margin-top: 0;
         }
@@ -191,7 +213,7 @@
             transform: translate(-50%, -50%) scale(1.1);
             background: var(--cor-principal);
         }
-        .thumb-botao:focus-visible { outline: 3px solid var(--cor-principal); outline-offset: 2px; }
+        .thumb-botao:focus-visible { outline: 3px solid var(--cor-titulo); outline-offset: 2px; }
         .episodio h3 { font-size: 0.9rem; line-height: 1.3; margin: 8px 0 0 0; }
 
         /* Botão "Quero ver mais episódios" */
@@ -210,7 +232,7 @@
         button.btn-mais { border: none; font: inherit; font-weight: bold; cursor: pointer; }
         button.btn-mais:disabled { opacity: 0.6; cursor: wait; }
         .link-canal { margin: 12px 0 0 0; font-size: 0.9rem; }
-        .link-canal a { color: var(--cor-principal); }
+        .link-canal a { color: var(--cor-titulo); }
 
         /* Seção do Spotify */
         .secao-spotify {
@@ -283,10 +305,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #fafafa;
+            background: var(--cor-slide);
             border-radius: 8px;
         }
-        .slide-instagram > a { color: var(--cor-principal); font-weight: bold; }
+        .slide-instagram > a { color: var(--cor-titulo); font-weight: bold; }
         .slide-instagram.carregado { display: block; min-height: 0; background: none; }
         .slide-instagram .instagram-media,
         .slide-instagram iframe {
@@ -336,12 +358,12 @@
             border: 3px solid var(--cor-principal);
         }
         .membro h4 { margin: 10px 0 5px 0; }
-        .membro p { margin: 0; font-size: 0.9rem; color: #666; }
+        .membro p { margin: 0; font-size: 0.9rem; color: var(--cor-suave); }
 
         footer {
             text-align: center;
             padding: 1.5rem;
-            background-color: #222;
+            background-color: var(--cor-rodape);
             color: white;
             font-size: 0.9rem;
         }
