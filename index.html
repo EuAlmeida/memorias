@@ -27,12 +27,75 @@
             background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
             color: white;
             text-align: center;
-            padding: 4rem 1rem;
+            padding: 2.5rem 1rem 2rem 1rem;
         }
         header h1 { font-size: 2.5rem; margin: 0 0 10px 0; }
-        header p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 20px auto; opacity: 0.9; }
+        header p { font-size: 1.2rem; max-width: 600px; margin: 0 auto; opacity: 0.9; }
         header { overflow: hidden; }
         .header-conteudo { will-change: transform, opacity; transform-origin: center top; }
+        /* Barra de navegação fixa */
+        html { scroll-behavior: smooth; }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+        section, header { scroll-margin-top: 80px; }
+        .barra-topo {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 8px 24px;
+            background-color: var(--cor-principal);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        }
+        .barra-logo img { display: block; height: 44px; width: auto; border-radius: 6px; }
+        .barra-links {
+            display: flex;
+            gap: 6px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+        }
+        .barra-links a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            transition: background-color 0.3s;
+        }
+        .barra-links a:hover, .barra-links a:focus-visible { background-color: rgba(255,255,255,0.15); }
+        .barra-links a.ativo { background-color: white; color: var(--cor-principal); }
+        @media (max-width: 600px) {
+            .barra-topo { padding: 8px 10px; gap: 8px; }
+            .barra-logo img { height: 36px; }
+            .barra-links { gap: 2px; }
+            .barra-links a { font-size: 0.85rem; padding: 5px 8px; }
+        }
+        .btn-ultimo {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: white;
+            color: var(--cor-principal);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 24px;
+            border-radius: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-ultimo:hover, .btn-ultimo:focus-visible { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .visualmente-oculto {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
         .logo { display: block; width: 150px; max-width: 60%; height: auto; margin: 0 auto 20px auto; border-radius: 10px; }
 
         .botoes-redes a {
@@ -258,19 +321,30 @@
 </head>
 <body>
 
+    <!-- BARRA DE NAVEGAÇÃO (FIXA NO TOPO) -->
+    <nav class="barra-topo" aria-label="Seções do site">
+        <a href="#inicio" class="barra-logo"><img src="logo.jpeg" alt="Memórias Matemáticas - voltar ao início"></a>
+        <ul class="barra-links">
+            <li><a href="#episodios">Episódios</a></li>
+            <li><a href="#ouvir">Ouvir</a></li>
+            <li><a href="#instagram">Instagram</a></li>
+            <li><a href="#equipe">Equipe</a></li>
+        </ul>
+    </nav>
+
     <!-- CABEÇALHO -->
-    <header>
+    <header id="inicio">
         <div class="header-conteudo">
-            <img src="logo.jpeg" alt="Logo Memórias Matemáticas" class="logo">
-            <h1>Memórias Matemáticas</h1>
+            <h1 class="visualmente-oculto">Memórias Matemáticas</h1>
             <p>Um projeto de extensão da Universidade Federal do Paraná. Conheça as histórias e as trajetórias dos professores de Matemática.</p>
+            <a href="#episodios" id="btn-ultimo" class="btn-ultimo">▶ Assistir ao último episódio</a>
         </div>
     </header>
 
     <div class="container">
 
         <!-- SEÇÃO DE EPISÓDIOS (ATUALIZA SOZINHA) -->
-        <section>
+        <section id="episodios">
             <h2>Últimos Episódios</h2>
 
             <div id="videos-automaticos" class="grade-episodios">
@@ -284,7 +358,7 @@
         </section>
 
         <!-- SEÇÃO DO SPOTIFY -->
-        <section class="secao-spotify">
+        <section class="secao-spotify" id="ouvir">
             <div class="spotify-icone" aria-hidden="true">🎧</div>
             <div class="spotify-texto">
                 <h2>Prefere só o áudio?</h2>
@@ -295,7 +369,7 @@
 
         <!-- SEÇÃO DO INSTAGRAM -->
         <!-- Para trocar os posts: substitua as imagens insta1/2/3.jpeg e cole o link de cada post no href -->
-        <section class="secao-instagram">
+        <section class="secao-instagram" id="instagram">
             <div class="chamada-instagram">
                 <div class="spotify-icone" aria-hidden="true">📷</div>
                 <div class="spotify-texto">
@@ -319,7 +393,7 @@
         </section>
 
         <!-- SEÇÃO DA EQUIPE -->
-        <section>
+        <section id="equipe">
             <h2>Nossa Equipe</h2>
             <div class="grade-equipe">
 
@@ -394,6 +468,36 @@
     <footer>
         <p>Memórias Matemáticas © 2026 - Licenciatura em Matemática (UFPR)</p>
     </footer>
+
+    <!-- SCRIPT: DESTACA NA BARRA A SEÇÃO QUE ESTÁ NA TELA -->
+    <script>
+        const linksBarra = document.querySelectorAll('.barra-links a');
+        const secoesBarra = Array.from(linksBarra).map(a => document.querySelector(a.getAttribute('href')));
+        let marcacaoAgendada = false;
+
+        function marcarTopicoAtivo() {
+            let atual = null;
+            secoesBarra.forEach(secao => {
+                if (secao && secao.getBoundingClientRect().top <= 120) atual = secao;
+            });
+            // No fim da página, marca a última seção
+            if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 5) {
+                atual = secoesBarra[secoesBarra.length - 1];
+            }
+            linksBarra.forEach(a => {
+                a.classList.toggle('ativo', !!atual && a.getAttribute('href') === '#' + atual.id);
+            });
+            marcacaoAgendada = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!marcacaoAgendada) {
+                marcacaoAgendada = true;
+                requestAnimationFrame(marcarTopicoAtivo);
+            }
+        }, { passive: true });
+        marcarTopicoAtivo();
+    </script>
 
     <!-- SCRIPT: CABEÇALHO RETRAI AO DESCER A PÁGINA -->
     <script>
@@ -526,6 +630,12 @@
                 console.warn('Erro ao buscar mais vídeos:', erro.message);
                 botaoMais.hidden = true;
             });
+        });
+
+        // Botão do cabeçalho: desce até os episódios e já abre o mais recente
+        document.getElementById('btn-ultimo').addEventListener('click', () => {
+            const primeiraThumb = galeria.querySelector('.thumb-botao');
+            if (primeiraThumb) primeiraThumb.click();
         });
 
         // Primeira carga
