@@ -6,6 +6,22 @@
     <meta name="color-scheme" content="light dark">
     <title>Memórias Matemáticas - Podcast UFPR</title>
 
+    <!-- ÍCONE NA ABA DO NAVEGADOR -->
+    <link rel="icon" type="image/jpeg" href="logo.jpeg">
+    <link rel="apple-touch-icon" href="logo.jpeg">
+
+    <!-- PRÉVIA DO LINK (WhatsApp, Instagram, Facebook, Google, etc.) -->
+    <meta name="description" content="Projeto de extensão da UFPR. Conheça as histórias e as trajetórias dos professores de Matemática em entrevistas no YouTube e no Spotify.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="Memórias Matemáticas">
+    <meta property="og:title" content="Memórias Matemáticas - Podcast UFPR">
+    <meta property="og:description" content="Conheça as histórias e as trajetórias dos professores de Matemática.">
+    <meta property="og:url" content="https://memoriasmatematicas.github.io/memorias/">
+    <meta property="og:image" content="https://memoriasmatematicas.github.io/memorias/logo.jpeg">
+    <meta property="og:image:alt" content="Logo do projeto Memórias Matemáticas">
+    <meta name="twitter:card" content="summary">
+
     <style>
         /* --- CONFIGURAÇÃO DE CORES --- */
         :root {
@@ -72,6 +88,17 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.25);
         }
         .barra-logo img { display: block; height: 44px; width: auto; border-radius: 6px; }
+        .barra-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+        }
+        .barra-nome { font-size: 1.2rem; font-weight: bold; white-space: nowrap; }
+        @media (max-width: 760px) {
+            .barra-nome { display: none; } /* no celular fica só a logo, para caber os tópicos */
+        }
         .barra-links {
             display: flex;
             gap: 6px;
@@ -373,7 +400,7 @@
 
     <!-- BARRA DE NAVEGAÇÃO (FIXA NO TOPO) -->
     <nav class="barra-topo" aria-label="Seções do site">
-        <a href="#inicio" class="barra-logo"><img src="logo.jpeg" alt="Memórias Matemáticas - voltar ao início"></a>
+        <a href="#inicio" class="barra-logo" aria-label="Memórias Matemáticas - voltar ao início"><img src="logo.jpeg" alt=""><span class="barra-nome">Memórias Matemáticas</span></a>
         <ul class="barra-links">
             <li><a href="#episodios">Episódios</a></li>
             <li><a href="#ouvir">Ouvir</a></li>
