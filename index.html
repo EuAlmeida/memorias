@@ -601,6 +601,13 @@
             font-size: 1.75rem;
             flex-shrink: 0;
         }
+        .icone-box img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: inherit;
+        }
         .icone-box.spotify { background: rgba(29, 185, 84, 0.14); color: #1DB954; }
         .icone-box.insta { background: rgba(214, 41, 118, 0.14); color: #d62976; }
         .midia-texto h2 { margin-bottom: 4px; }
@@ -752,8 +759,10 @@
             text-align: center;
             transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         }
-        .membro:hover {
-            transform: translateY(-4px);
+        .membro:hover, .membro:focus-within {
+            position: relative;
+            z-index: 1;
+            transform: translateY(-4px) scale(1.05);
             box-shadow: var(--sombra-hover);
             border-color: rgba(0, 60, 113, 0.35);
         }
@@ -785,6 +794,67 @@
             font-size: 0.82rem;
             font-weight: 600;
             color: var(--cor-suave);
+        }
+
+        /* Botão de rede social do integrante */
+        .membro-rede {
+            display: inline-flex;
+            margin-top: 12px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background-color: var(--cor-principal);
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s;
+        }
+        .membro-rede:hover, .membro-rede:focus-visible { background-color: var(--cor-principal-hover); }
+        .membro-rede[href="#"] { display: none; } /* sem link = sem botão */
+        @media (hover: hover) {
+            .membro-rede { opacity: 0; transform: translateY(6px); }
+            .membro:hover .membro-rede, .membro:focus-within .membro-rede { opacity: 1; transform: none; }
+        }
+
+        /* Sobre o projeto (seção Quem somos) */
+        .sobre-projeto {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 28px;
+            align-items: start;
+            margin-bottom: 36px;
+        }
+        .sobre-texto p { margin: 0 0 14px 0; font-size: 1.02rem; }
+        .sobre-texto p:last-child { margin-bottom: 0; }
+        .sobre-destaques {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .sobre-destaques li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background-color: var(--cor-cartao-sec);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-interno);
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            color: var(--cor-suave);
+        }
+        .sobre-destaques span { font-size: 1.5rem; }
+        .sobre-destaques strong { display: block; color: var(--cor-texto); font-size: 0.98rem; }
+        .titulo-equipe {
+            color: var(--cor-titulo);
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin: 0 0 18px 0;
+        }
+        @media (max-width: 760px) {
+            .sobre-projeto { grid-template-columns: 1fr; }
         }
 
         /* --- RODAPÉ --- */
@@ -864,7 +934,7 @@
                     <li><a href="#episodios">Episódios</a></li>
                     <li><a href="#ouvir">Ouvir</a></li>
                     <li><a href="#instagram">Instagram</a></li>
-                    <li><a href="#equipe">Equipe</a></li>
+                    <li><a href="#quem-somos">Quem somos</a></li>
                 </ul>
 
                 <button id="btn-tema" class="btn-tema" type="button" aria-label="Alternar tema claro ou escuro" title="Alternar tema">
@@ -920,7 +990,7 @@
         <section class="secao-spotify" id="ouvir">
             <div class="chamada-midia">
                 <div class="midia-info">
-                    <div class="icone-box spotify" aria-hidden="true">🎧</div>
+                    <div class="icone-box spotify" aria-hidden="true"><img src="spotify.png" alt="" onerror="this.replaceWith('🎧')"></div>
                     <div class="midia-texto">
                         <h2>Prefere só o áudio?</h2>
                         <p>Ouça todos os episódios no Spotify, no caminho para a aula ou onde estiver.</p>
@@ -946,7 +1016,7 @@
         <section class="secao-instagram" id="instagram">
             <div class="chamada-midia">
                 <div class="midia-info">
-                    <div class="icone-box insta" aria-hidden="true">📷</div>
+                    <div class="icone-box insta" aria-hidden="true"><img src="instagram.png" alt="" onerror="this.replaceWith('📷')"></div>
                     <div class="midia-texto">
                         <h2>Acompanhe no Instagram</h2>
                         <p>Bastidores, cortes das entrevistas e novidades da próxima gravação.</p>
@@ -968,73 +1038,98 @@
         </section>
 
         <!-- SEÇÃO DA EQUIPE -->
-        <section id="equipe">
+        <section id="quem-somos">
             <div class="cabecalho-secao">
                 <div>
-                    <h2>Nossa Equipe</h2>
-                    <p class="subtitulo-secao">Estudantes e docentes que constroem o projeto Memórias Matemáticas.</p>
+                    <h2>Quem somos</h2>
+                    <p class="subtitulo-secao">Conheça o projeto e as pessoas por trás dele.</p>
                 </div>
             </div>
+
+            <!-- SOBRE O PROJETO (TEXTO PROVISÓRIO: edite à vontade) -->
+            <div class="sobre-projeto">
+                <div class="sobre-texto">
+                    <p>O <strong>Memórias Matemáticas</strong> é um projeto de extensão do curso de Licenciatura em Matemática da Universidade Federal do Paraná que registra, em formato de podcast, as histórias de professores e professoras de Matemática.</p>
+                    <p>Em cada episódio, conversamos sobre formação, desafios da sala de aula e as memórias que marcaram a trajetória de quem dedicou a vida a ensinar. Nosso objetivo é preservar essas histórias e aproximar futuros professores de quem já percorreu esse caminho.</p>
+                </div>
+                <ul class="sobre-destaques">
+                    <li><span aria-hidden="true">🎓</span><div><strong>Extensão UFPR</strong>Licenciatura em Matemática</div></li>
+                    <li><span aria-hidden="true">🎙️</span><div><strong>Entrevistas</strong>Em vídeo no YouTube e em áudio no Spotify</div></li>
+                    <li><span aria-hidden="true">📚</span><div><strong>Memória</strong>Trajetórias que inspiram novos professores</div></li>
+                </ul>
+            </div>
+
+            <h3 class="titulo-equipe">Nossa equipe</h3>
 
             <div class="grade-equipe">
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="elisangela.jpeg" alt="Elisangela" loading="lazy"></div>
                     <h4>Elisangela</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="eugenia.jpeg" alt="Maria Eugênia" loading="lazy"></div>
                     <h4>Maria Eugênia</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="joao.jpeg" alt="João Vitor" loading="lazy"></div>
                     <h4>João Vitor</h4>
                     <p>Produção e Edição</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="jose.jpeg" alt="José Silva" loading="lazy"></div>
                     <h4>José Silva</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="igor.jpeg" alt="Igor Ayub" loading="lazy"></div>
                     <h4>Igor Ayub</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="nicolas.jpeg" alt="Nicolas Scholze" loading="lazy"></div>
                     <h4>Nicolas Scholze</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="maria.jpeg" alt="Maria Paula" loading="lazy"></div>
                     <h4>Maria Paula</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="angelica.jpeg" alt="Angélica" loading="lazy"></div>
                     <h4>Angélica</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="bruno.jpeg" alt="Bruno Bonassoli" loading="lazy"></div>
                     <h4>Bruno Bonassoli</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
 
                 <div class="membro">
                     <div class="membro-foto-wrap"><img src="luiza.jpeg" alt="Luiza" loading="lazy"></div>
                     <h4>Luiza</h4>
                     <p>Função no Projeto</p>
+                    <a class="membro-rede" href="#" target="_blank" rel="noopener">Instagram ↗</a>
                 </div>
             </div>
         </section>
