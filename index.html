@@ -144,7 +144,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            overflow-x: auto;
+            min-width: 0; /* deixa os tópicos se ajustarem sem criar barra de rolagem */
         }
         .barra-links {
             display: flex;
@@ -203,6 +203,25 @@
             .barra-nome { display: none; }
             .barra-container { padding: 8px 12px; }
             .barra-links a { font-size: 0.84rem; padding: 6px 10px; }
+        }
+
+        /* Celulares estreitos: fonte e espaços menores para os 4 tópicos caberem */
+        @media (max-width: 480px) {
+            .barra-container { padding: 8px 10px; gap: 8px; }
+            .barra-direita { gap: 6px; }
+            .barra-links { gap: 0; }
+            .barra-links a { font-size: 0.78rem; padding: 6px 7px; }
+            .barra-logo img { width: 34px; height: 34px; }
+            .btn-tema { width: 34px; height: 34px; }
+        }
+        @media (max-width: 380px) {
+            .barra-links a { font-size: 0.72rem; padding: 5px 5px; }
+        }
+        @media (max-width: 340px) {
+            .barra-container { padding: 8px 6px; gap: 6px; }
+            .barra-logo img { width: 30px; height: 30px; }
+            .btn-tema { width: 30px; height: 30px; }
+            .barra-links a { font-size: 0.66rem; padding: 4px 4px; }
         }
 
         /* --- HERO / CABEÇALHO --- */
