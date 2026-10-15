@@ -702,6 +702,16 @@
             border-radius: var(--raio-interno);
             border: 1px solid var(--cor-borda);
         }
+        .modal-fotos-grade {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .modal-fotos-grade.varias { grid-template-columns: repeat(2, 1fr); }
+        .modal-fotos-grade.varias a:first-child { grid-column: 1 / -1; } /* 1ª foto em destaque */
+        .modal-fotos-grade a { display: block; }
+        .modal-fotos-grade.varias img { aspect-ratio: 4 / 3; object-fit: cover; }
+        .modal-fotos-grade.varias a:first-child img { aspect-ratio: auto; }
         .modal-foto figcaption { margin-top: 6px; font-size: 0.85rem; color: var(--cor-suave); }
         .modal-descricao {
             white-space: pre-line;
@@ -730,6 +740,46 @@
         }
         .modal-fechar:hover, .modal-fechar:focus-visible { background: #ef4444; transform: scale(1.08); }
         body.modal-aberto { overflow: hidden; }
+
+        /* Pop-up no computador: rola inteiro e mostra texto e foto lado a lado */
+        @media (min-width: 761px) {
+            .modal-episodio { width: min(1080px, calc(100% - 48px)); }
+            .modal-episodio[open] { display: block; overflow-y: auto; }
+            .modal-fechar {
+                position: sticky;
+                top: 12px;
+                right: auto;
+                display: block;
+                margin: 12px 12px -52px auto;
+            }
+            .modal-player iframe { max-height: 68dvh; }
+            .modal-corpo {
+                overflow: visible;
+                display: grid;
+                grid-template-columns: 1fr 1.25fr;
+                grid-template-rows: auto auto 1fr auto;
+                grid-template-areas:
+                    "data foto"
+                    "titulo foto"
+                    "descricao foto"
+                    "youtube foto";
+                column-gap: 30px;
+                row-gap: 10px;
+                align-items: start;
+                padding: 24px 28px 30px 28px;
+            }
+            .modal-corpo > .episodio-data { grid-area: data; }
+            .modal-corpo > h3 { grid-area: titulo; }
+            .modal-corpo > .modal-descricao { grid-area: descricao; }
+            .modal-corpo > .modal-youtube { grid-area: youtube; }
+            .modal-corpo > .modal-foto { grid-area: foto; margin: 0; position: sticky; top: 16px; }
+            .modal-foto img { max-height: 78dvh; object-fit: cover; }
+            /* Sem foto: texto ocupa a largura toda */
+            .modal-corpo:has(> .modal-foto[hidden]) {
+                grid-template-columns: 1fr;
+                grid-template-areas: "data" "titulo" "descricao" "youtube";
+            }
+        }
         @media (max-width: 600px) {
             .modal-episodio {
                 width: 100%;
@@ -1348,8 +1398,8 @@
             <span class="episodio-data" id="modal-data"></span>
             <h3 id="modal-titulo"></h3>
             <figure class="modal-foto" id="modal-foto" hidden>
-                <a id="modal-foto-link" href="#" target="_blank" rel="noopener"><img id="modal-foto-img" alt=""></a>
-                <figcaption>📸 Foto da gravação</figcaption>
+                <div class="modal-fotos-grade" id="modal-fotos-grade"></div>
+                <figcaption id="modal-foto-legenda">📸 Foto da gravação</figcaption>
             </figure>
             <div class="modal-descricao" id="modal-descricao"></div>
             <a class="modal-youtube" id="modal-youtube" href="#" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
@@ -1655,8 +1705,10 @@
         // ---------- POP-UP ----------
         const modalPlayer = document.getElementById('modal-player');
         const modalFoto = document.getElementById('modal-foto');
-        const modalFotoImg = document.getElementById('modal-foto-img');
-        const modalFotoLink = document.getElementById('modal-foto-link');
+        const modalFotosGrade = document.getElementById('modal-fotos-grade');
+        const modalFotoLegenda = document.getElementById('modal-foto-legenda');
+        const MAX_FOTOS = 10; // máximo de fotos por episódio
+        let buscaFotosAtual = 0;
         const modalDescricao = document.getElementById('modal-descricao');
 
         // Transforma links da descrição em links clicáveis (com segurança)
@@ -1678,21 +1730,49 @@
             modalDescricao.hidden = !texto.trim();
         }
 
-        // Procura a foto da gravação pelo código do vídeo (tenta .jpeg, .jpg e .png)
-        function procurarFoto(id) {
+        // Testa se uma imagem existe (tenta .jpeg, .jpg e .png)
+        function encontrarImagem(nomeBase) {
+            return new Promise(resolve => {
+                let tentativa = 0;
+                const img = new Image();
+                img.onload = () => resolve(img.src);
+                img.onerror = () => {
+                    tentativa++;
+                    if (tentativa < EXTENSOES_FOTO.length) img.src = nomeBase + '.' + EXTENSOES_FOTO[tentativa];
+                    else resolve(null);
+                };
+                img.src = nomeBase + '.' + EXTENSOES_FOTO[0];
+            });
+        }
+
+        // Procura as fotos da gravação: CODIGO, CODIGO-2, CODIGO-3... (para no primeiro número que não existir)
+        async function procurarFotos(id, titulo) {
+            const minhaBusca = ++buscaFotosAtual;
             modalFoto.hidden = true;
-            let tentativa = 0;
-            modalFotoImg.onload = () => { modalFoto.hidden = false; };
-            modalFotoImg.onerror = () => {
-                tentativa++;
-                if (tentativa < EXTENSOES_FOTO.length) carregarTentativa();
-            };
-            function carregarTentativa() {
-                const caminho = PASTA_FOTOS + id + '.' + EXTENSOES_FOTO[tentativa];
-                modalFotoImg.src = caminho;
-                modalFotoLink.href = caminho;
+            modalFotosGrade.innerHTML = '';
+            modalFotosGrade.classList.remove('varias');
+
+            for (let n = 1; n <= MAX_FOTOS; n++) {
+                const nome = PASTA_FOTOS + id + (n === 1 ? '' : '-' + n);
+                const caminho = await encontrarImagem(nome);
+                if (minhaBusca !== buscaFotosAtual) return; // outro episódio foi aberto no meio da busca
+                if (!caminho) break;
+
+                const link = document.createElement('a');
+                link.href = caminho;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                const img = document.createElement('img');
+                img.src = caminho;
+                img.alt = 'Foto ' + n + ' da gravação: ' + titulo;
+                link.appendChild(img);
+                modalFotosGrade.appendChild(link);
+
+                const total = modalFotosGrade.children.length;
+                modalFotosGrade.classList.toggle('varias', total > 1);
+                modalFotoLegenda.textContent = total > 1 ? '📸 Fotos da gravação' : '📸 Foto da gravação';
+                modalFoto.hidden = false;
             }
-            carregarTentativa();
         }
 
         function abrirEpisodio(v, opcoes = {}) {
@@ -1700,8 +1780,7 @@
             document.getElementById('modal-data').textContent = v.data || '';
             document.getElementById('modal-youtube').href = 'https://www.youtube.com/watch?v=' + v.id;
             preencherDescricao(v.descricao || '');
-            procurarFoto(v.id);
-            modalFotoImg.alt = 'Foto da gravação: ' + v.titulo;
+            procurarFotos(v.id, v.titulo);
 
             // Player com legendas em português ligadas
             const iframe = document.createElement('iframe');
@@ -1726,6 +1805,7 @@
         function fecharModal() {
             if (modal.open) modal.close();
             modalPlayer.innerHTML = '';
+            buscaFotosAtual++;
             document.body.classList.remove('modal-aberto');
         }
 
