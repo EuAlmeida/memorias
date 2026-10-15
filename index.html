@@ -590,6 +590,161 @@
         }
         .link-canal a:hover { text-decoration: underline; }
 
+        /* --- DESTAQUE DO EPISÓDIO MAIS RECENTE --- */
+        .destaque-episodio { margin-bottom: 34px; }
+        .destaque-card {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 28px;
+            align-items: center;
+            background-color: var(--cor-cartao-sec);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-interno);
+            overflow: hidden;
+        }
+        .destaque-card .thumb-botao { height: 100%; min-height: 100%; }
+        .destaque-info { padding: 22px 26px 22px 0; display: flex; flex-direction: column; gap: 10px; }
+        .destaque-info h3 {
+            margin: 0;
+            font-size: 1.35rem;
+            line-height: 1.3;
+            color: var(--cor-texto);
+        }
+        .destaque-resumo {
+            margin: 0;
+            color: var(--cor-suave);
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: pre-line;
+        }
+        .destaque-botao { align-self: flex-start; margin-top: 6px; }
+        .destaque-skeleton .skeleton-thumb { max-height: 380px; }
+        @media (max-width: 760px) {
+            .destaque-card { grid-template-columns: 1fr; gap: 0; }
+            .destaque-info { padding: 18px; }
+            .destaque-info h3 { font-size: 1.15rem; }
+        }
+
+        /* --- FILEIRA DE EPISÓDIOS (ESTILO NETFLIX) --- */
+        .titulo-fileira {
+            margin: 0 0 14px 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--cor-titulo);
+        }
+        .fileira-area { position: relative; }
+        .fileira-episodios {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            padding: 6px 4px 16px 4px;
+            scrollbar-width: thin;
+        }
+        .fileira-episodios > .episodio,
+        .fileira-episodios > .skeleton-card {
+            flex: 0 0 270px;
+            scroll-snap-align: start;
+        }
+        .fileira-episodios .thumb-botao img { transition: transform 0.4s ease, opacity 0.3s ease; }
+        .fileira-vazia { color: var(--cor-suave); margin: 0; }
+        .seta-ep-esq { left: -16px; }
+        .seta-ep-dir { right: -16px; }
+        @media (max-width: 600px) {
+            .fileira-episodios > .episodio,
+            .fileira-episodios > .skeleton-card { flex: 0 0 78%; }
+        }
+
+        /* --- POP-UP DO EPISÓDIO --- */
+        .modal-episodio {
+            width: min(920px, calc(100% - 32px));
+            max-height: calc(100dvh - 40px);
+            padding: 0;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+            background: var(--cor-cartao);
+            color: var(--cor-texto);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+        }
+        .modal-episodio[open] { display: flex; flex-direction: column; }
+        .modal-episodio::backdrop {
+            background: rgba(4, 9, 18, 0.78);
+            backdrop-filter: blur(4px);
+        }
+        .modal-player { flex: 0 0 auto; background: #000; }
+        .modal-player iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            max-height: 62dvh;
+            border: none;
+        }
+        .modal-corpo {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 20px 26px 26px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-corpo h3 { margin: 0; font-size: 1.3rem; line-height: 1.3; }
+        .modal-foto { margin: 8px 0 4px 0; }
+        .modal-foto img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: var(--raio-interno);
+            border: 1px solid var(--cor-borda);
+        }
+        .modal-foto figcaption { margin-top: 6px; font-size: 0.85rem; color: var(--cor-suave); }
+        .modal-descricao {
+            white-space: pre-line;
+            color: var(--cor-suave);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+        .modal-descricao a, .modal-youtube { color: var(--cor-titulo); font-weight: 600; }
+        .modal-youtube { align-self: flex-start; margin-top: 6px; text-decoration: none; }
+        .modal-youtube:hover { text-decoration: underline; }
+        .modal-fechar {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 3;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.65);
+            color: #ffffff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .modal-fechar:hover, .modal-fechar:focus-visible { background: #ef4444; transform: scale(1.08); }
+        body.modal-aberto { overflow: hidden; }
+        @media (max-width: 600px) {
+            .modal-episodio {
+                width: 100%;
+                max-width: 100%;
+                height: 100dvh;
+                max-height: 100dvh;
+                border-radius: 0;
+                border: none;
+            }
+            .modal-player iframe { max-height: none; }
+            .modal-corpo { padding: 16px 16px 24px 16px; }
+            .modal-corpo h3 { font-size: 1.12rem; }
+            .modal-fechar { top: calc(8px + env(safe-area-inset-top, 0px)); right: 8px; }
+        }
+
         /* --- SEÇÃO DO SPOTIFY --- */
         .secao-spotify {
             border-left: 6px solid #1DB954;
@@ -992,15 +1147,27 @@
                 </div>
             </div>
 
-            <div id="videos-automaticos" class="grade-episodios" aria-live="polite">
-                <!-- Skeleton Loading inicial -->
-                <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
-                <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
-                <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
+            <!-- DESTAQUE: EPISÓDIO MAIS RECENTE -->
+            <div id="destaque-episodio" class="destaque-episodio" aria-live="polite">
+                <div class="skeleton-card destaque-skeleton"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
+            </div>
+
+            <!-- FILEIRA: DEMAIS EPISÓDIOS (estilo Netflix) -->
+            <div id="bloco-fileira">
+                <h3 class="titulo-fileira">Episódios anteriores</h3>
+                <div class="fileira-area">
+                    <button class="seta-carrossel seta-ep-esq" type="button" aria-label="Episódios anteriores">‹</button>
+                    <div id="fileira-episodios" class="fileira-episodios">
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-linhas"><div class="skeleton-linha"></div><div class="skeleton-linha curta"></div></div></div>
+                    </div>
+                    <button class="seta-carrossel seta-ep-dir" type="button" aria-label="Próximos episódios">›</button>
+                </div>
             </div>
 
             <div class="area-botao">
-                <button id="btn-carregar" class="btn-mais" type="button" hidden>Carregar mais episódios</button>
                 <p class="link-canal">Ou acesse o acervo completo <a href="https://www.youtube.com/@Mem%C3%B3riasMatem%C3%A1ticas/videos" target="_blank" rel="noopener">diretamente no canal do YouTube ↗</a></p>
             </div>
         </section>
@@ -1173,6 +1340,22 @@
         </div>
     </footer>
 
+    <!-- POP-UP DO EPISÓDIO -->
+    <dialog id="modal-episodio" class="modal-episodio" aria-labelledby="modal-titulo">
+        <button class="modal-fechar" type="button" aria-label="Fechar episódio">✕</button>
+        <div class="modal-player" id="modal-player"></div>
+        <div class="modal-corpo">
+            <span class="episodio-data" id="modal-data"></span>
+            <h3 id="modal-titulo"></h3>
+            <figure class="modal-foto" id="modal-foto" hidden>
+                <a id="modal-foto-link" href="#" target="_blank" rel="noopener"><img id="modal-foto-img" alt=""></a>
+                <figcaption>📸 Foto da gravação</figcaption>
+            </figure>
+            <div class="modal-descricao" id="modal-descricao"></div>
+            <a class="modal-youtube" id="modal-youtube" href="#" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+        </div>
+    </dialog>
+
     <!-- SCRIPT: ALTERNÂNCIA DE TEMA (CLARO / ESCURO) E FALLBACK DE AVATAR -->
     <script>
         const btnTema = document.getElementById('btn-tema');
@@ -1326,142 +1509,295 @@
         }
     </script>
 
-    <!-- SCRIPT: VÍDEOS DO CANAL (3 EM 3, PLAYER SÓ CARREGA APÓS O CLIQUE) -->
+    <!-- SCRIPT: EPISÓDIOS (DESTAQUE + FILEIRA + POP-UP COM VÍDEO, DESCRIÇÃO E FOTO) -->
     <script>
         const API_KEY = 'AIzaSyAo1DA3wUFhgoIgC0huUmZn8KhdEIo2qUI';          // chave da YouTube Data API v3
         const CHANNEL_ID = 'UC7ltXJOjWjBcajjulwC0HUQ';                      // ID do canal (começa com UC)
-        const POR_VEZ = 3;                                                  // quantos vídeos aparecem por clique
+        const PASTA_FOTOS = 'IMAGENS/episodios/';                           // fotos com o código do vídeo: IMAGENS/episodios/CODIGO.jpeg
+        const EXTENSOES_FOTO = ['jpeg', 'jpg', 'png'];                      // formatos aceitos para a foto
 
         const PLAYLIST_UPLOADS = 'UU' + CHANNEL_ID.slice(2);
-        const galeria = document.getElementById('videos-automaticos');
-        const botaoMais = document.getElementById('btn-carregar');
+        const areaDestaque = document.getElementById('destaque-episodio');
+        const fileira = document.getElementById('fileira-episodios');
+        const blocoFileira = document.getElementById('bloco-fileira');
+        const modal = document.getElementById('modal-episodio');
 
-        let fila = [];
+        const episodios = [];          // todos os vídeos já buscados (ordem: mais recente primeiro)
         let proximaPagina = null;
         let fimDaLista = false;
-        let primeiraVez = true;
-        let contadorRenderizados = 0;
+        let buscando = false;
 
-        const formatadorData = new Intl.DateTimeFormat('pt-BR', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        });
+        const formatadorData = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
 
-        async function buscarPagina() {
-            let url = 'https://www.googleapis.com/youtube/v3/playlistItems'
-                + '?part=snippet&maxResults=12'
-                + '&playlistId=' + PLAYLIST_UPLOADS
-                + '&key=' + API_KEY;
-            if (proximaPagina) url += '&pageToken=' + proximaPagina;
-
-            const resposta = await fetch(url);
-            const dados = await resposta.json();
-            if (dados.error) throw new Error(dados.error.message);
-
-            const videos = (dados.items || [])
-                .filter(i => i.snippet.title !== 'Private video' && i.snippet.title !== 'Deleted video')
-                .map(i => {
-                    const id = i.snippet.resourceId.videoId;
-                    const t = i.snippet.thumbnails || {};
-                    const thumb = (t.maxres || t.high || t.medium || {}).url || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-                    const dataBruta = i.snippet.publishedAt ? new Date(i.snippet.publishedAt) : null;
-                    const dataFormatada = dataBruta && !isNaN(dataBruta) ? formatadorData.format(dataBruta) : '';
-                    return {
-                        titulo: i.snippet.title,
-                        id: id,
-                        thumb: thumb,
-                        data: dataFormatada
-                    };
-                });
-
-            fila.push(...videos);
-            proximaPagina = dados.nextPageToken || null;
-            if (!proximaPagina) fimDaLista = true;
+        function montarVideo(snippet, id) {
+            const t = snippet.thumbnails || {};
+            const thumb = (t.maxres || t.high || t.medium || {}).url || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+            const dataBruta = snippet.publishedAt ? new Date(snippet.publishedAt) : null;
+            return {
+                id: id,
+                titulo: snippet.title,
+                descricao: snippet.description || '',
+                thumb: thumb,
+                data: dataBruta && !isNaN(dataBruta) ? formatadorData.format(dataBruta) : ''
+            };
         }
 
-        function adicionarVideos(videos) {
-            if (primeiraVez) {
-                galeria.innerHTML = '';
-                primeiraVez = false;
+        // Busca uma página de vídeos do canal
+        async function buscarPagina() {
+            if (buscando || fimDaLista) return [];
+            buscando = true;
+            try {
+                let url = 'https://www.googleapis.com/youtube/v3/playlistItems'
+                    + '?part=snippet&maxResults=25'
+                    + '&playlistId=' + PLAYLIST_UPLOADS
+                    + '&key=' + API_KEY;
+                if (proximaPagina) url += '&pageToken=' + proximaPagina;
+
+                const dados = await (await fetch(url)).json();
+                if (dados.error) throw new Error(dados.error.message);
+
+                const novos = (dados.items || [])
+                    .filter(i => i.snippet.title !== 'Private video' && i.snippet.title !== 'Deleted video')
+                    .map(i => montarVideo(i.snippet, i.snippet.resourceId.videoId));
+
+                episodios.push(...novos);
+                proximaPagina = dados.nextPageToken || null;
+                if (!proximaPagina) fimDaLista = true;
+                return novos;
+            } finally {
+                buscando = false;
             }
+        }
+
+        // Busca um vídeo específico (usado quando alguém abre um link direto de episódio antigo)
+        async function buscarVideoPorId(id) {
+            const url = 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' + encodeURIComponent(id) + '&key=' + API_KEY;
+            const dados = await (await fetch(url)).json();
+            const item = (dados.items || [])[0];
+            return item ? montarVideo(item.snippet, item.id) : null;
+        }
+
+        // Cria a thumb clicável (sem carregar o player)
+        function criarThumb(v, comSelo) {
+            const botao = document.createElement('button');
+            botao.className = 'thumb-botao';
+            botao.type = 'button';
+            botao.setAttribute('aria-label', 'Assistir: ' + v.titulo);
+            botao.innerHTML = `
+                ${comSelo ? '<span class="selo-novo">Mais recente</span>' : ''}
+                <img loading="lazy" alt="">
+                <span class="icone-play" aria-hidden="true"></span>`;
+            botao.querySelector('img').src = v.thumb;
+            botao.addEventListener('click', () => abrirEpisodio(v));
+            return botao;
+        }
+
+        // Destaque grande do episódio mais recente
+        function mostrarDestaque(v) {
+            areaDestaque.innerHTML = '';
+            const card = document.createElement('article');
+            card.className = 'destaque-card';
+            card.appendChild(criarThumb(v, true));
+
+            const info = document.createElement('div');
+            info.className = 'destaque-info';
+            info.innerHTML = `
+                ${v.data ? `<span class="episodio-data">${v.data}</span>` : ''}
+                <h3></h3>
+                <p class="destaque-resumo"></p>
+                <button class="btn-mais destaque-botao" type="button">▶ Assistir episódio</button>`;
+            info.querySelector('h3').textContent = v.titulo;
+            const resumo = info.querySelector('.destaque-resumo');
+            if (v.descricao) resumo.textContent = v.descricao; else resumo.remove();
+            info.querySelector('.destaque-botao').addEventListener('click', () => abrirEpisodio(v));
+
+            card.appendChild(info);
+            areaDestaque.appendChild(card);
+        }
+
+        // Adiciona cards na fileira
+        function adicionarNaFileira(videos) {
+            fileira.querySelectorAll('.skeleton-card').forEach(el => el.remove());
             videos.forEach(v => {
-                const ehMaisRecente = (contadorRenderizados === 0);
-                contadorRenderizados++;
-
-                const div = document.createElement('article');
-                div.className = 'episodio';
-                div.innerHTML = `
-                    <button class="thumb-botao" type="button">
-                        ${ehMaisRecente ? '<span class="selo-novo">Mais recente</span>' : ''}
-                        <img loading="lazy" alt="">
-                        <span class="icone-play" aria-hidden="true"></span>
-                    </button>
-                    <div class="episodio-info">
-                        ${v.data ? `<span class="episodio-data">${v.data}</span>` : ''}
-                        <h3></h3>
-                    </div>`;
-
-                const botao = div.querySelector('.thumb-botao');
-                botao.setAttribute('aria-label', 'Assistir: ' + v.titulo);
-                div.querySelector('img').src = v.thumb;
-                div.querySelector('h3').textContent = v.titulo;
-                div.querySelector('h3').title = v.titulo;
-
-                botao.addEventListener('click', () => {
-                    const iframe = document.createElement('iframe');
-                    iframe.src = `https://www.youtube.com/embed/${v.id}?autoplay=1`;
-                    iframe.title = v.titulo;
-                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                    iframe.allowFullscreen = true;
-                    botao.replaceWith(iframe);
-                });
-
-                galeria.appendChild(div);
+                const card = document.createElement('article');
+                card.className = 'episodio';
+                card.appendChild(criarThumb(v, false));
+                const info = document.createElement('div');
+                info.className = 'episodio-info';
+                info.innerHTML = `${v.data ? `<span class="episodio-data">${v.data}</span>` : ''}<h3></h3>`;
+                info.querySelector('h3').textContent = v.titulo;
+                info.querySelector('h3').title = v.titulo;
+                card.appendChild(info);
+                fileira.appendChild(card);
             });
         }
 
-        async function carregarMais() {
-            botaoMais.disabled = true;
-            botaoMais.textContent = 'Carregando...';
-
-            while (fila.length < POR_VEZ && !fimDaLista) {
-                await buscarPagina();
+        // Quando a pessoa chega perto do fim da fileira, busca mais episódios
+        async function carregarMaisNaFileira() {
+            if (fimDaLista || buscando) return;
+            if (fileira.scrollLeft + fileira.clientWidth < fileira.scrollWidth - 400) return;
+            try {
+                adicionarNaFileira(await buscarPagina());
+            } catch (erro) {
+                console.warn('Erro ao buscar mais episódios:', erro.message);
             }
-            const lote = fila.splice(0, POR_VEZ);
-            if (!lote.length && primeiraVez) throw new Error('Nenhum vídeo encontrado');
-            adicionarVideos(lote);
+        }
+        fileira.addEventListener('scroll', carregarMaisNaFileira, { passive: true });
 
-            botaoMais.disabled = false;
-            botaoMais.textContent = 'Carregar mais episódios';
-            botaoMais.hidden = (fila.length === 0 && fimDaLista);
+        document.querySelector('.seta-ep-esq').addEventListener('click', () => {
+            fileira.scrollBy({ left: -fileira.clientWidth * 0.8, behavior: 'smooth' });
+        });
+        document.querySelector('.seta-ep-dir').addEventListener('click', () => {
+            fileira.scrollBy({ left: fileira.clientWidth * 0.8, behavior: 'smooth' });
+            setTimeout(carregarMaisNaFileira, 500);
+        });
+
+        // ---------- POP-UP ----------
+        const modalPlayer = document.getElementById('modal-player');
+        const modalFoto = document.getElementById('modal-foto');
+        const modalFotoImg = document.getElementById('modal-foto-img');
+        const modalFotoLink = document.getElementById('modal-foto-link');
+        const modalDescricao = document.getElementById('modal-descricao');
+
+        // Transforma links da descrição em links clicáveis (com segurança)
+        function preencherDescricao(texto) {
+            modalDescricao.innerHTML = '';
+            const partes = texto.split(/(https?:\/\/[^\s]+)/g);
+            partes.forEach(parte => {
+                if (/^https?:\/\//.test(parte)) {
+                    const a = document.createElement('a');
+                    a.href = parte;
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.textContent = parte;
+                    modalDescricao.appendChild(a);
+                } else {
+                    modalDescricao.appendChild(document.createTextNode(parte));
+                }
+            });
+            modalDescricao.hidden = !texto.trim();
         }
 
+        // Procura a foto da gravação pelo código do vídeo (tenta .jpeg, .jpg e .png)
+        function procurarFoto(id) {
+            modalFoto.hidden = true;
+            let tentativa = 0;
+            modalFotoImg.onload = () => { modalFoto.hidden = false; };
+            modalFotoImg.onerror = () => {
+                tentativa++;
+                if (tentativa < EXTENSOES_FOTO.length) carregarTentativa();
+            };
+            function carregarTentativa() {
+                const caminho = PASTA_FOTOS + id + '.' + EXTENSOES_FOTO[tentativa];
+                modalFotoImg.src = caminho;
+                modalFotoLink.href = caminho;
+            }
+            carregarTentativa();
+        }
+
+        function abrirEpisodio(v, opcoes = {}) {
+            document.getElementById('modal-titulo').textContent = v.titulo;
+            document.getElementById('modal-data').textContent = v.data || '';
+            document.getElementById('modal-youtube').href = 'https://www.youtube.com/watch?v=' + v.id;
+            preencherDescricao(v.descricao || '');
+            procurarFoto(v.id);
+            modalFotoImg.alt = 'Foto da gravação: ' + v.titulo;
+
+            // Player com legendas em português ligadas
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${v.id}?autoplay=1&cc_load_policy=1&cc_lang_pref=pt&hl=pt-BR&rel=0`;
+            iframe.title = v.titulo;
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+            modalPlayer.innerHTML = '';
+            modalPlayer.appendChild(iframe);
+
+            modal.querySelector('.modal-corpo').scrollTop = 0;
+            if (!modal.open) modal.showModal();
+            document.body.classList.add('modal-aberto');
+
+            // Link próprio do episódio (#ep-CODIGO), sem criar entrada repetida no histórico
+            const hash = '#ep-' + v.id;
+            if (!opcoes.semHistorico && location.hash !== hash) {
+                history.pushState({ episodio: v.id }, '', hash);
+            }
+        }
+
+        // Fecha de fato (para o vídeo e limpa o player)
+        function fecharModal() {
+            if (modal.open) modal.close();
+            modalPlayer.innerHTML = '';
+            document.body.classList.remove('modal-aberto');
+        }
+
+        // Pedido de fechar (X, Esc, clique fora): volta o histórico se o pop-up criou uma entrada
+        function pedirFechar() {
+            if (history.state && history.state.episodio) {
+                history.back(); // o evento popstate fecha o pop-up
+            } else {
+                fecharModal();
+                if (location.hash.startsWith('#ep-')) {
+                    history.replaceState(null, '', location.pathname + location.search);
+                }
+            }
+        }
+
+        modal.querySelector('.modal-fechar').addEventListener('click', pedirFechar);
+        modal.addEventListener('cancel', e => { e.preventDefault(); pedirFechar(); });   // tecla Esc
+        modal.addEventListener('click', e => { if (e.target === modal) pedirFechar(); }); // clique fora
+
+        // Botão voltar do celular/navegador
+        window.addEventListener('popstate', () => {
+            if (location.hash.startsWith('#ep-')) {
+                abrirPorLink(location.hash.slice(4));
+            } else if (modal.open) {
+                fecharModal();
+            }
+        });
+
+        // Abre um episódio a partir do link (#ep-CODIGO)
+        async function abrirPorLink(id) {
+            let v = episodios.find(e => e.id === id);
+            if (!v) {
+                try { v = await buscarVideoPorId(id); } catch (erro) { v = null; }
+            }
+            if (v) abrirEpisodio(v, { semHistorico: true });
+        }
+
+        // Botão do cabeçalho: abre direto o episódio mais recente
+        document.getElementById('btn-ultimo').addEventListener('click', e => {
+            if (episodios.length) {
+                e.preventDefault();
+                abrirEpisodio(episodios[0]);
+            }
+        });
+
+        // Se a API falhar: mostra a playlist do canal
         function mostrarPlaylistReserva() {
-            galeria.innerHTML = `
-                <div class="episodio" style="grid-column: 1 / -1; width: 100%; max-width: 640px; margin: 0 auto;">
+            blocoFileira.hidden = true;
+            areaDestaque.innerHTML = `
+                <div class="episodio" style="width: 100%; max-width: 720px; margin: 0 auto;">
                     <iframe src="https://www.youtube.com/embed/videoseries?list=${PLAYLIST_UPLOADS}"
                         title="Episódios Memórias Matemáticas" allowfullscreen></iframe>
                 </div>`;
         }
 
-        botaoMais.addEventListener('click', () => {
-            carregarMais().catch(erro => {
-                console.warn('Erro ao buscar mais vídeos:', erro.message);
-                botaoMais.hidden = true;
+        // ---------- PRIMEIRA CARGA ----------
+        buscarPagina()
+            .then(videos => {
+                if (!videos.length) throw new Error('Nenhum vídeo encontrado');
+                mostrarDestaque(videos[0]);
+                const demais = videos.slice(1);
+                if (demais.length) adicionarNaFileira(demais);
+                else blocoFileira.hidden = true;
+
+                // Se a pessoa chegou por um link de episódio, já abre o pop-up
+                if (location.hash.startsWith('#ep-')) abrirPorLink(location.hash.slice(4));
+            })
+            .catch(erro => {
+                console.warn('Erro ao buscar vídeos:', erro.message);
+                mostrarPlaylistReserva();
             });
-        });
-
-        document.getElementById('btn-ultimo').addEventListener('click', () => {
-            const primeiraThumb = galeria.querySelector('.thumb-botao');
-            if (primeiraThumb) primeiraThumb.click();
-        });
-
-        carregarMais().catch(erro => {
-            console.warn('Erro ao buscar vídeos:', erro.message);
-            botaoMais.hidden = true;
-            mostrarPlaylistReserva();
-        });
     </script>
+
 </body>
 </html>
