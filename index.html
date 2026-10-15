@@ -232,18 +232,33 @@
             padding: 4.5rem 1.5rem 4rem 1.5rem;
             overflow: hidden;
         }
-        /* Grade matemática sutil no fundo */
-        header::before {
-            content: "";
+        /* Grade matemática sutil no fundo (se move devagar na diagonal) */
+        .hero-grade {
+            --velocidade-grade: 18s; /* tempo para andar 1 quadrado: maior = mais devagar */
             position: absolute;
             inset: 0;
+            overflow: hidden;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+            pointer-events: none;
+        }
+        .hero-grade::before {
+            content: "";
+            position: absolute;
+            inset: -40px;
             background-image: 
                 linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
             background-size: 40px 40px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
-            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
-            pointer-events: none;
+            animation: mover-grade var(--velocidade-grade) linear infinite;
+            will-change: transform;
+        }
+        @keyframes mover-grade {
+            from { transform: translate3d(0, 0, 0); }
+            to   { transform: translate3d(40px, 40px, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-grade::before { animation: none; }
         }
         .header-conteudo {
             position: relative;
@@ -1172,6 +1187,7 @@
 
     <!-- CABEÇALHO / HERO -->
     <header id="inicio">
+        <div class="hero-grade" aria-hidden="true"></div>
         <div class="header-conteudo">
             <div class="hero-topo">
                 <img src="IMAGENS/logo.jpeg" alt="Logo do projeto Memórias Matemáticas" class="hero-logo" onerror="this.style.display='none'">
